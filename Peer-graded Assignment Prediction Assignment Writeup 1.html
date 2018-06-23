@@ -1,0 +1,198 @@
+<html>
+
+<head>
+<style type="text/css">
+.knitr .inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.rimage .left {
+  text-align: left;
+}
+.rimage .right {
+  text-align: right;
+}
+.rimage .center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+<title>Title</title>
+</head>
+
+<body>
+
+<p>This is an R HTML document. When you click the <b>Knit HTML</b> button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+
+<div class="chunk" id="unnamed-chunk-1"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(caret)</span>
+</pre></div>
+<div class="message"><pre class="knitr r">## Loading required package: lattice
+</pre></div>
+<div class="message"><pre class="knitr r">## Loading required package: ggplot2
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(knitr)</span>
+<span class="hl kwd">library</span><span class="hl std">(randomForest)</span>
+</pre></div>
+<div class="message"><pre class="knitr r">## randomForest 4.6-14
+</pre></div>
+<div class="message"><pre class="knitr r">## Type rfNews() to see new features/changes/bug fixes.
+</pre></div>
+<div class="message"><pre class="knitr r">## 
+## Attaching package: 'randomForest'
+</pre></div>
+<div class="message"><pre class="knitr r">## The following object is masked from 'package:ggplot2':
+## 
+##     margin
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(rpart)</span>
+<span class="hl kwd">library</span><span class="hl std">(rpart.plot)</span>
+<span class="hl kwd">library</span><span class="hl std">(rattle)</span>
+</pre></div>
+<div class="message"><pre class="knitr r">## Rattle: A free graphical interface for data science with R.
+## Version 5.1.0 Copyright (c) 2006-2017 Togaware Pty Ltd.
+## Type 'rattle()' to shake, rattle, and roll your data.
+</pre></div>
+<div class="message"><pre class="knitr r">## 
+## Attaching package: 'rattle'
+</pre></div>
+<div class="message"><pre class="knitr r">## The following object is masked from 'package:randomForest':
+## 
+##     importance
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(corrplot)</span>
+</pre></div>
+<div class="message"><pre class="knitr r">## corrplot 0.84 loaded
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(e1071)</span>
+<span class="hl kwd">library</span><span class="hl std">(rmarkdown)</span>
+
+<span class="hl com"># Download the dataset </span>
+<span class="hl std">trainUrl</span> <span class="hl kwb">&lt;-</span> <span class="hl str">&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;</span>
+<span class="hl std">testUrl</span> <span class="hl kwb">&lt;-</span> <span class="hl str">&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;</span>
+
+
+<span class="hl com"># Load the dataset into memory</span>
+<span class="hl std">trainingData</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">read.csv</span><span class="hl std">(</span><span class="hl kwd">url</span><span class="hl std">(trainUrl),</span> <span class="hl kwc">na.strings</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;NA&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;#DIV/0!&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;&quot;</span><span class="hl std">))</span>
+<span class="hl std">testingData</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">read.csv</span><span class="hl std">(</span><span class="hl kwd">url</span><span class="hl std">(testUrl),</span> <span class="hl kwc">na.strings</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;NA&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;#DIV/0!&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;&quot;</span><span class="hl std">))</span>
+
+<span class="hl com">#</span>
+<span class="hl std">trainingData</span> <span class="hl kwb">&lt;-</span> <span class="hl std">trainingData[,</span> <span class="hl kwd">colSums</span><span class="hl std">(</span><span class="hl kwd">is.na</span><span class="hl std">(trainingData))</span> <span class="hl opt">==</span> <span class="hl num">0</span><span class="hl std">]</span>
+<span class="hl std">testingData</span> <span class="hl kwb">&lt;-</span> <span class="hl std">testingData[,</span> <span class="hl kwd">colSums</span><span class="hl std">(</span><span class="hl kwd">is.na</span><span class="hl std">(testingData))</span> <span class="hl opt">==</span> <span class="hl num">0</span><span class="hl std">]</span>
+
+<span class="hl com"># Delete variables that are not related </span>
+<span class="hl std">trainingData</span> <span class="hl kwb">&lt;-</span> <span class="hl std">trainingData[,</span> <span class="hl opt">-</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">7</span><span class="hl std">)]</span>
+<span class="hl std">testingData</span> <span class="hl kwb">&lt;-</span> <span class="hl std">testingData[,</span> <span class="hl opt">-</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">7</span><span class="hl std">)]</span>
+
+<span class="hl com"># partioning the training set into two different dataset</span>
+
+<span class="hl std">traningPartitionData</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">createDataPartition</span><span class="hl std">(trainingData</span><span class="hl opt">$</span><span class="hl std">classe,</span>  <span class="hl kwc">p</span> <span class="hl std">=</span> <span class="hl num">0.7</span><span class="hl std">,</span> <span class="hl kwc">list</span> <span class="hl std">= F)</span>
+<span class="hl std">trainingDataSet</span> <span class="hl kwb">&lt;-</span> <span class="hl std">trainingData[traningPartitionData, ]</span>
+<span class="hl std">testingDataSet</span> <span class="hl kwb">&lt;-</span> <span class="hl std">trainingData[</span><span class="hl opt">-</span><span class="hl std">traningPartitionData, ]</span>
+<span class="hl kwd">dim</span><span class="hl std">(trainingData);</span> <span class="hl kwd">dim</span><span class="hl std">(testingDataSet)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 19622    53
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 5885   53
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl com"># Prediction model 1 - decision tree</span>
+<span class="hl std">decisionTreeModel</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">rpart</span><span class="hl std">(classe</span> <span class="hl opt">~</span> <span class="hl std">.,</span> <span class="hl kwc">data</span> <span class="hl std">= trainingDataSet,</span> <span class="hl kwc">method</span> <span class="hl std">=</span> <span class="hl str">&quot;class&quot;</span><span class="hl std">)</span>
+<span class="hl std">decisionTreePrediction</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">predict</span><span class="hl std">(decisionTreeModel, testingDataSet,</span> <span class="hl kwc">type</span> <span class="hl std">=</span> <span class="hl str">&quot;class&quot;</span><span class="hl std">)</span>
+
+<span class="hl com"># Plot Decision Tree</span>
+<span class="hl kwd">rpart.plot</span><span class="hl std">(decisionTreeModel,</span> <span class="hl kwc">main</span> <span class="hl std">=</span> <span class="hl str">&quot;Decision Tree&quot;</span><span class="hl std">,</span> <span class="hl kwc">under</span> <span class="hl std">= T,</span> <span class="hl kwc">faclen</span> <span class="hl std">=</span> <span class="hl num">0</span><span class="hl std">)</span>
+</pre></div>
+<div class="warning"><pre class="knitr r">## Warning: labs do not fit even at cex 0.15, there may be some overplotting
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl com"># Prediction model 2 - random forest</span>
+<span class="hl std">randomForestModel</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">randomForest</span><span class="hl std">(classe</span> <span class="hl opt">~</span><span class="hl std">. ,</span> <span class="hl kwc">data</span> <span class="hl std">= trainingDataSet,</span> <span class="hl kwc">method</span> <span class="hl std">=</span> <span class="hl str">&quot;class&quot;</span><span class="hl std">)</span>
+<span class="hl std">randomForestPrediction</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">predict</span><span class="hl std">(randomForestModel, testingDataSet,</span> <span class="hl kwc">type</span> <span class="hl std">=</span> <span class="hl str">&quot;class&quot;</span><span class="hl std">)</span>
+
+<span class="hl kwd">confusionMatrix</span><span class="hl std">(randomForestPrediction, testingDataSet</span><span class="hl opt">$</span><span class="hl std">classe)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 1673    6    0    0    0
+##          B    1 1131    2    0    0
+##          C    0    2 1021   14    1
+##          D    0    0    3  949    3
+##          E    0    0    0    1 1078
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9944          
+##                  95% CI : (0.9921, 0.9961)
+##     No Information Rate : 0.2845          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.9929          
+##  Mcnemar's Test P-Value : NA              
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            0.9994   0.9930   0.9951   0.9844   0.9963
+## Specificity            0.9986   0.9994   0.9965   0.9988   0.9998
+## Pos Pred Value         0.9964   0.9974   0.9836   0.9937   0.9991
+## Neg Pred Value         0.9998   0.9983   0.9990   0.9970   0.9992
+## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+## Detection Rate         0.2843   0.1922   0.1735   0.1613   0.1832
+## Detection Prevalence   0.2853   0.1927   0.1764   0.1623   0.1833
+## Balanced Accuracy      0.9990   0.9962   0.9958   0.9916   0.9980
+</pre></div>
+</div></div>
+
+<p>You can also embed plots, for example:</p>
+
+
+
+</body>
+</html>
